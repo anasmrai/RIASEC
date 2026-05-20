@@ -52,7 +52,7 @@
   .validation-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
   .validation-card h4{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.55rem}
   .validation-card p{font-size:.9rem;line-height:1.6;color:var(--text)}
-  .restart-btn{display:block;width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:4px;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;margin-top:1rem;transition:all .2s}
+  .restart-btn{display:block;width:100%;padding:0 14px;background:var(--accent);color:#fff;border:none;border-radius:4px;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;margin-top:0;transition:all .2s}
   .restart-btn:hover{background:#1a2536}
   .preview-note{max-width:880px;margin:0 auto;background:#fff8e1;border:1px solid #ead99a;color:#4f4219;padding:12px 16px;border-radius:8px;font-size:.86rem;line-height:1.5;margin-top:1rem}
   @media(max-width:640px){
@@ -60,8 +60,9 @@
     .pr-bar-wrap{grid-column:1/-1;grid-row:2}
     .pr-strength{grid-column:1/-1}
   }
-  .action-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem}
-  .pdf-btn{display:block;width:100%;padding:14px;background:var(--gold);color:#1f1a0b;border:none;border-radius:4px;font-size:1rem;font-weight:800;cursor:pointer;text-align:center;transition:all .2s}
+  .action-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem;align-items:stretch}
+  .action-row button{height:48px;margin:0!important;display:flex;align-items:center;justify-content:center}
+  .pdf-btn{width:100%;padding:0 14px;background:var(--gold);color:#1f1a0b;border:none;border-radius:4px;font-size:1rem;font-weight:800;cursor:pointer;text-align:center;transition:all .2s}
   .pdf-btn:hover{filter:brightness(.95)}
   .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
   .modal-backdrop.is-open{display:flex}
@@ -101,13 +102,6 @@
   </div>
 
   <div class="res-body">
-    <div class="flag-row">
-      <div class="flag">Clear primary pattern</div>
-      <div class="flag">Strong people-support signal</div>
-      <div class="flag">Structured work preference</div>
-      <div class="flag">Development-ready profile</div>
-    </div>
-
     <p class="section-title">RIASEC Profile Scores</p>
     <div class="profile-grid">
       <div class="profile-row">
@@ -190,15 +184,15 @@
     <p>Add the employee details below. They will appear at the top of the downloaded report.</p>
     <div class="modal-field">
       <label for="pdfFirstName">First Name</label>
-      <input id="pdfFirstName" type="text" autocomplete="given-name" placeholder="First name" />
+      <input id="pdfFirstName" type="text" autocomplete="given-name" placeholder="First name" required />
     </div>
     <div class="modal-field">
       <label for="pdfLastName">Last Name</label>
-      <input id="pdfLastName" type="text" autocomplete="family-name" placeholder="Last name" />
+      <input id="pdfLastName" type="text" autocomplete="family-name" placeholder="Last name" required />
     </div>
     <div class="modal-field">
       <label for="pdfTitle">Title</label>
-      <input id="pdfTitle" type="text" autocomplete="organization-title" placeholder="Job title" />
+      <input id="pdfTitle" type="text" autocomplete="organization-title" placeholder="Job title" required />
     </div>
     <div class="modal-actions">
       <button class="cancel-btn" id="cancelPdfBtn" type="button">Cancel</button>
@@ -216,6 +210,23 @@
   const downloadStatus = document.getElementById('downloadStatus');
   const NL = String.fromCharCode(10);
   const BS = String.fromCharCode(92);
+
+  const pdfColors = {
+    bg: [247,245,240],
+    card: [255,255,255],
+    accent: [44,62,80],
+    accentDark: [26,37,54],
+    text: [26,26,26],
+    muted: [107,107,107],
+    border: [232,228,220],
+    gold: [201,168,76],
+    Realistic: [192,57,43],
+    Investigative: [26,82,118],
+    Artistic: [125,60,152],
+    Social: [30,132,73],
+    Enterprising: [211,84,0],
+    Conventional: [36,113,163]
+  };
 
   function openPdfModal(){
     pdfModal.classList.add('is-open');
@@ -239,7 +250,8 @@
       '”': '"',
       '–': '-',
       '—': '-',
-      '·': '-'
+      '·': '-',
+      '•': '-'
     };
     let output = '';
     for(let i = 0; i < text.length; i++){
@@ -251,7 +263,7 @@
         output += ch;
       }
     }
-    return output;
+    return output.replace('  ', ' ').trim();
   }
 
   function pdfEscape(value){
@@ -272,6 +284,10 @@
     return output;
   }
 
+  function rgb(color){
+    return (color[0] / 255).toFixed(3) + ' ' + (color[1] / 255).toFixed(3) + ' ' + (color[2] / 255).toFixed(3);
+  }
+
   function wrapText(text, maxChars){
     const words = cleanText(text).split(' ').filter(Boolean);
     const lines = [];
@@ -289,117 +305,287 @@
     return lines;
   }
 
-  function getReportLines(){
-    const firstName = document.getElementById('pdfFirstName').value.trim() || 'First Name';
-    const lastName = document.getElementById('pdfLastName').value.trim() || 'Last Name';
-    const title = document.getElementById('pdfTitle').value.trim() || 'Not provided';
+  function getColorForType(type){
+    const cleanType = cleanText(type);
+    return pdfColors[cleanType] || pdfColors.accent;
+  }
+
+  function getPdfReportData(){
+    const firstName = document.getElementById('pdfFirstName').value.trim();
+    const lastName = document.getElementById('pdfLastName').value.trim();
+    const title = document.getElementById('pdfTitle').value.trim();
     const today = new Date().toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'});
 
-    const lines = [];
-    lines.push({text:'RIASEC Profile Report', size:20, gap:24});
-    lines.push({text:'Name: ' + firstName + ' ' + lastName, size:12, gap:16});
-    lines.push({text:'Title: ' + title, size:12, gap:16});
-    lines.push({text:'Report Date: ' + today, size:12, gap:28});
+    const headerTitleEl = document.querySelector('.res-header h1');
+    const headerMetaEl = document.querySelector('.res-header p:last-of-type');
+    const headerTitle = headerTitleEl ? headerTitleEl.innerText : 'RIASEC Profile';
+    const headerMeta = headerMetaEl ? headerMetaEl.innerText : '';
 
-    lines.push({text:'Profile Summary', size:15, gap:20});
-    lines.push({text:'Profile: Social-Conventional Interest Profile', size:11, gap:15});
-    lines.push({text:'Primary type: Social', size:11, gap:15});
-    lines.push({text:'Holland Code: SCE', size:11, gap:24});
+    const codeLetters = [];
+    document.querySelectorAll('.code-letter').forEach(function(el){
+      codeLetters.push(cleanText(el.innerText));
+    });
 
-    lines.push({text:'RIASEC Profile Scores', size:15, gap:20});
+    const scores = [];
     document.querySelectorAll('.profile-row').forEach(function(row){
       const labelEl = row.querySelector('.pr-label');
       const pctEl = row.querySelector('.pr-pct');
       const strengthEl = row.querySelector('.pr-strength');
-      const label = labelEl ? labelEl.innerText : '';
-      const pct = pctEl ? pctEl.innerText : '';
-      const strength = strengthEl ? strengthEl.innerText : '';
-      lines.push({text:label + ': ' + pct, size:11, gap:15});
-      wrapText(strength, 88).forEach(function(wrapped){
-        lines.push({text:'  ' + wrapped, size:10, gap:13});
-      });
-      lines.push({text:'', size:10, gap:6});
+      const label = labelEl ? cleanText(labelEl.innerText) : '';
+      const pctText = pctEl ? cleanText(pctEl.innerText) : '0%';
+      const pct = parseInt(pctText, 10) || 0;
+      scores.push({label:label, pctText:pctText, pct:pct, strength:strengthEl ? strengthEl.innerText : '', color:getColorForType(label)});
     });
 
-    lines.push({text:'RIASEC Profile Report', size:15, gap:20});
+    const reportItems = [];
     document.querySelectorAll('.report h3, .report p').forEach(function(el){
-      if(el.tagName.toLowerCase() === 'h3'){
-        lines.push({text:el.innerText, size:13, gap:18});
-      } else {
-        wrapText(el.innerText, 88).forEach(function(wrapped){
-          lines.push({text:wrapped, size:10, gap:13});
-        });
-        lines.push({text:'', size:10, gap:6});
-      }
+      const tag = el.tagName.toLowerCase();
+      reportItems.push({type:tag === 'h3' ? 'heading' : 'paragraph', text:el.innerText});
     });
 
-    lines.push({text:'Strongest Work Drivers', size:15, gap:20});
+    const highlights = [
+      'Clear primary pattern',
+      'Strong people-support signal',
+      'Structured work preference',
+      'Development-ready profile'
+    ];
+
+    const drivers = [];
     document.querySelectorAll('.sd-card').forEach(function(card){
       const nameEl = card.querySelector('.sd-name');
       const typeEl = card.querySelector('.sd-type');
       const descEl = card.querySelector('.sd-desc');
-      const name = nameEl ? nameEl.innerText : '';
-      const type = typeEl ? typeEl.innerText : '';
-      const desc = descEl ? descEl.innerText : '';
-      lines.push({text:name + ' - ' + type, size:11, gap:15});
-      wrapText(desc, 88).forEach(function(wrapped){
-        lines.push({text:'  ' + wrapped, size:10, gap:13});
-      });
-      lines.push({text:'', size:10, gap:6});
+      const type = typeEl ? cleanText(typeEl.innerText) : '';
+      drivers.push({name:nameEl ? nameEl.innerText : '', type:type, desc:descEl ? descEl.innerText : '', color:getColorForType(type)});
     });
 
-    return {lines:lines, firstName:firstName, lastName:lastName};
+    return {
+      firstName:firstName,
+      lastName:lastName,
+      title:title,
+      date:today,
+      headerTitle:headerTitle,
+      headerMeta:headerMeta,
+      codeLetters:codeLetters,
+      scores:scores,
+      reportItems:reportItems,
+      highlights:highlights,
+      drivers:drivers
+    };
   }
 
-  function buildPdfDocument(report){
+  function buildStyledPdf(data){
     const pageWidth = 612;
     const pageHeight = 792;
-    const marginLeft = 54;
-    const startY = 738;
-    const bottomY = 54;
-    const pages = [];
-    let streamLines = [];
-    let y = startY;
-
-    function startPage(){
-      streamLines = ['BT'];
-      y = startY;
-    }
-
-    function endPage(){
-      streamLines.push('ET');
-      pages.push(streamLines.join(NL));
-    }
-
-    startPage();
-    report.lines.forEach(function(item){
-      const gap = item.gap || 14;
-      if(y - gap < bottomY){
-        endPage();
-        startPage();
-      }
-      const size = item.size || 10;
-      streamLines.push('/F1 ' + size + ' Tf');
-      streamLines.push('1 0 0 1 ' + marginLeft + ' ' + y + ' Tm');
-      streamLines.push('(' + pdfEscape(item.text) + ') Tj');
-      y -= gap;
-    });
-    endPage();
-
+    const margin = 42;
+    const contentWidth = pageWidth - margin * 2;
+    const bottom = 46;
     const objects = [];
+    const pages = [];
+    let commands = [];
+    let y = 0;
+
     function addObject(content){
       objects.push(content);
       return objects.length;
     }
 
+    function rect(x, bottomY, w, h, color){
+      commands.push(rgb(color) + ' rg');
+      commands.push(x + ' ' + bottomY + ' ' + w + ' ' + h + ' re f');
+    }
+
+    function strokeRect(x, bottomY, w, h, color){
+      commands.push(rgb(color) + ' RG');
+      commands.push('0.8 w');
+      commands.push(x + ' ' + bottomY + ' ' + w + ' ' + h + ' re S');
+    }
+
+    function line(x1, y1, x2, y2, color, width){
+      commands.push(rgb(color) + ' RG');
+      commands.push((width || 1) + ' w');
+      commands.push(x1 + ' ' + y1 + ' m ' + x2 + ' ' + y2 + ' l S');
+    }
+
+    function text(value, x, textY, size, color, bold){
+      commands.push('BT');
+      commands.push(rgb(color || pdfColors.text) + ' rg');
+      commands.push((bold ? '/F2 ' : '/F1 ') + size + ' Tf');
+      commands.push('1 0 0 1 ' + x + ' ' + textY + ' Tm');
+      commands.push('(' + pdfEscape(value) + ') Tj');
+      commands.push('ET');
+    }
+
+    function newPage(isFirst){
+      if(commands.length){
+        pages.push(commands.join(NL));
+      }
+      commands = [];
+      rect(0, 0, pageWidth, pageHeight, pdfColors.bg);
+      y = pageHeight - margin;
+      if(!isFirst){
+        rect(0, pageHeight - 62, pageWidth, 62, pdfColors.accent);
+        text('RIASEC Profile Report', margin, pageHeight - 39, 15, pdfColors.card, true);
+        line(margin, pageHeight - 66, pageWidth - margin, pageHeight - 66, pdfColors.gold, 1.6);
+        y = pageHeight - 92;
+      }
+    }
+
+    function finishPages(){
+      if(commands.length){
+        pages.push(commands.join(NL));
+      }
+    }
+
+    function ensure(space){
+      if(y - space < bottom){
+        newPage(false);
+      }
+    }
+
+    function card(x, topY, w, h){
+      rect(x, topY - h, w, h, pdfColors.card);
+      strokeRect(x, topY - h, w, h, pdfColors.border);
+    }
+
+    function sectionTitle(title){
+      ensure(34);
+      text(title, margin, y, 16, pdfColors.accent, true);
+      line(margin, y - 9, margin + 120, y - 9, pdfColors.gold, 2);
+      y -= 30;
+    }
+
+    function paragraph(value, maxChars, size, gap){
+      const lines = wrapText(value, maxChars || 88);
+      lines.forEach(function(lineText){
+        ensure(gap || 15);
+        text(lineText, margin, y, size || 10.5, pdfColors.text, false);
+        y -= gap || 15;
+      });
+    }
+
+    function drawHeader(){
+      rect(0, 646, pageWidth, 146, pdfColors.accent);
+      rect(0, 646, pageWidth, 5, pdfColors.gold);
+      text('RIASEC PROFILE REPORT', margin, 742, 10, pdfColors.gold, true);
+      text(cleanText(data.headerTitle), margin, 713, 22, pdfColors.card, true);
+      paragraphHeader(cleanText(data.headerMeta), margin, 690, 10, pdfColors.card);
+
+      const letters = data.codeLetters.length ? data.codeLetters : ['S','C','E'];
+      let x = pageWidth - margin - letters.length * 38;
+      letters.forEach(function(letter){
+        const c = getColorForType(letter === 'R' ? 'Realistic' : letter === 'I' ? 'Investigative' : letter === 'A' ? 'Artistic' : letter === 'S' ? 'Social' : letter === 'E' ? 'Enterprising' : 'Conventional');
+        rect(x, 682, 30, 30, c);
+        text(letter, x + 10, 692, 14, pdfColors.card, true);
+        x += 38;
+      });
+
+      y = 610;
+      card(margin, y, contentWidth, 70);
+      text(data.firstName + ' ' + data.lastName, margin + 18, y - 25, 17, pdfColors.accent, true);
+      text('Title: ' + data.title, margin + 18, y - 45, 10.5, pdfColors.text, false);
+      text('Report Date: ' + data.date, pageWidth - margin - 170, y - 45, 10.5, pdfColors.muted, false);
+      y -= 100;
+    }
+
+    function paragraphHeader(value, x, textY, size, color){
+      const lines = wrapText(value, 72);
+      lines.slice(0, 2).forEach(function(lineText, index){
+        text(lineText, x, textY - index * 13, size, color, false);
+      });
+    }
+
+    function drawHighlights(){
+      sectionTitle('Profile Highlights');
+      const itemW = (contentWidth - 12) / 2;
+      data.highlights.forEach(function(highlight, index){
+        const col = index % 2;
+        if(col === 0) ensure(46);
+        const x = margin + col * (itemW + 12);
+        const topY = y;
+        card(x, topY, itemW, 34);
+        rect(x + 12, topY - 21, 8, 8, pdfColors.gold);
+        text(highlight, x + 26, topY - 23, 9.5, pdfColors.accent, true);
+        if(col === 1 || index === data.highlights.length - 1){
+          y -= 46;
+        }
+      });
+      y -= 4;
+    }
+
+    function drawScores(){
+      sectionTitle('RIASEC Profile Scores');
+      data.scores.forEach(function(score){
+        ensure(52);
+        card(margin, y, contentWidth, 42);
+        rect(margin + 14, y - 24, 8, 8, score.color);
+        text(score.label, margin + 28, y - 25, 10.5, pdfColors.text, true);
+        rect(margin + 150, y - 25, 260, 7, pdfColors.border);
+        rect(margin + 150, y - 25, Math.max(5, 260 * score.pct / 100), 7, score.color);
+        text(score.pctText, margin + 425, y - 26, 10.5, pdfColors.accent, true);
+        const strength = wrapText(score.strength, 66)[0] || '';
+        text(strength, margin + 28, y - 39, 8.5, pdfColors.muted, false);
+        y -= 52;
+      });
+      y -= 8;
+    }
+
+    function drawProfileReport(){
+      sectionTitle('RIASEC Profile Report');
+      ensure(80);
+      card(margin, y, contentWidth, 1);
+      y -= 16;
+      data.reportItems.forEach(function(item){
+        if(item.type === 'heading'){
+          ensure(28);
+          text(item.text, margin + 10, y, 13, pdfColors.accent, true);
+          y -= 20;
+        } else {
+          wrapText(item.text, 90).forEach(function(lineText){
+            ensure(15);
+            text(lineText, margin + 10, y, 10.2, pdfColors.text, false);
+            y -= 15;
+          });
+          y -= 6;
+        }
+      });
+      y -= 10;
+    }
+
+    function drawDrivers(){
+      sectionTitle('Strongest Work Drivers');
+      data.drivers.forEach(function(driver){
+        ensure(76);
+        card(margin, y, contentWidth, 64);
+        rect(margin, y - 64, 6, 64, driver.color);
+        text(driver.name, margin + 18, y - 24, 12, pdfColors.text, true);
+        rect(pageWidth - margin - 105, y - 30, 82, 18, driver.color);
+        text(driver.type, pageWidth - margin - 94, y - 24, 8.5, pdfColors.card, true);
+        const descLines = wrapText(driver.desc, 86).slice(0, 2);
+        descLines.forEach(function(lineText, index){
+          text(lineText, margin + 18, y - 45 - index * 12, 9, pdfColors.muted, false);
+        });
+        y -= 76;
+      });
+    }
+
+    newPage(true);
+    drawHeader();
+    drawHighlights();
+    drawScores();
+    drawProfileReport();
+    drawDrivers();
+    finishPages();
+
     const catalogId = addObject('<< /Type /Catalog /Pages 2 0 R >>');
     const pagesId = addObject('');
-    const fontId = addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    const fontRegularId = addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    const fontBoldId = addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
     const pageIds = [];
 
     pages.forEach(function(content){
       const contentId = addObject('<< /Length ' + content.length + ' >>' + NL + 'stream' + NL + content + NL + 'endstream');
-      const pageId = addObject('<< /Type /Page /Parent ' + pagesId + ' 0 R /MediaBox [0 0 ' + pageWidth + ' ' + pageHeight + '] /Resources << /Font << /F1 ' + fontId + ' 0 R >> >> /Contents ' + contentId + ' 0 R >>');
+      const pageId = addObject('<< /Type /Page /Parent ' + pagesId + ' 0 R /MediaBox [0 0 ' + pageWidth + ' ' + pageHeight + '] /Resources << /Font << /F1 ' + fontRegularId + ' 0 R /F2 ' + fontBoldId + ' 0 R >> >> /Contents ' + contentId + ' 0 R >>');
       pageIds.push(pageId);
     });
 
@@ -446,15 +632,28 @@
   }
 
   function generatePdfReport(){
-    const report = getReportLines();
-    const pdf = buildPdfDocument(report);
+    const firstNameInput = document.getElementById('pdfFirstName');
+    const lastNameInput = document.getElementById('pdfLastName');
+    const titleInput = document.getElementById('pdfTitle');
+
+    if(!firstNameInput.value.trim() || !lastNameInput.value.trim() || !titleInput.value.trim()){
+      downloadStatus.style.display = 'block';
+      downloadStatus.innerHTML = 'Please complete First Name, Last Name, and Title before generating the PDF.';
+      if(!firstNameInput.value.trim()) firstNameInput.focus();
+      else if(!lastNameInput.value.trim()) lastNameInput.focus();
+      else titleInput.focus();
+      return;
+    }
+
+    const report = getPdfReportData();
+    const pdf = buildStyledPdf(report);
     const fileName = ['RIASEC_Profile_Report', safeFilePart(report.firstName), safeFilePart(report.lastName)].filter(Boolean).join('_') + '.pdf';
     const blob = new Blob([pdf], {type:'application/pdf'});
     const blobUrl = URL.createObjectURL(blob);
 
     downloadStatus.style.display = 'block';
     downloadStatus.innerHTML =
-      'PDF is ready. Use one of the buttons below. If this preview blocks the file, publish/open the page directly in Chrome and it will work normally.' +
+      'Styled PDF is ready. Use one of the buttons below.' +
       '<br><br>' +
       '<a href="' + blobUrl + '" target="_blank" rel="noopener" style="display:inline-block;margin-right:8px;padding:10px 14px;background:#2C3E50;color:#fff;text-decoration:none;border-radius:4px;">Open PDF</a>' +
       '<a href="' + blobUrl + '" download="' + fileName + '" style="display:inline-block;padding:10px 14px;background:#C9A84C;color:#1f1a0b;text-decoration:none;border-radius:4px;font-weight:800;">Download PDF</a>';
