@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RIASEC Results Page Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --r:#C0392B;--i:#1A5276;--a:#7D3C98;--s:#1E8449;--e:#D35400;--c:#2471A3;
+    --bg:#F7F5F0;--card:#FFFFFF;--text:#1a1a1a;--muted:#6b6b6b;--border:#E8E4DC;
+    --accent:#2C3E50;--gold:#C9A84C;--soft:#F0EEE8;
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+  button{font-family:'DM Sans',sans-serif}
+
+  #results{background:var(--bg);padding:0;overflow:auto;min-height:100vh}
+  .res-header{background:var(--accent);color:#fff;padding:3rem 2rem 2rem;text-align:center}
+  .res-header h1{font-family:'DM Serif Display',serif;font-size:2.25rem;margin-bottom:.5rem}
+  .res-header p{color:rgba(255,255,255,.72);font-size:.95rem}
+  .code-display{display:inline-flex;gap:5px;margin:1.5rem 0 0}
+  .code-letter{width:54px;height:54px;display:flex;align-items:center;justify-content:center;border-radius:7px;font-size:1.45rem;font-weight:800;font-family:'DM Serif Display',serif;color:#fff}
+  .res-body{max-width:880px;margin:0 auto;padding:2.5rem 1.5rem}
+  .section-title{font-family:'DM Serif Display',serif;font-size:1.42rem;margin-bottom:1.1rem;color:var(--text)}
+  .profile-grid{display:grid;gap:12px;margin-bottom:2.4rem}
+  .profile-row{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 18px;display:grid;grid-template-columns:130px 1fr 68px;align-items:center;gap:12px}
+  .pr-label{font-size:.86rem;font-weight:700;display:flex;align-items:center;gap:8px}
+  .pr-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .pr-bar-wrap{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .pr-bar{height:100%;border-radius:4px;transition:width 1s ease}
+  .pr-pct{font-size:.86rem;font-weight:800;text-align:right}
+  .pr-strength{font-size:.74rem;color:var(--muted);grid-column:1/-1;padding-top:2px;line-height:1.45}
+  .flag-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:2rem}
+  .flag{padding:7px 14px;border-radius:20px;font-size:.8rem;font-weight:700;border:1px solid;letter-spacing:.02em;background:#F0F4FF;border-color:#BCC8E8;color:#2C3E50}
+  .report{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:2rem;margin-bottom:2.4rem}
+  .report h3{font-family:'DM Serif Display',serif;font-size:1.3rem;margin:1.2rem 0 .55rem;color:var(--accent)}
+  .report h3:first-child{margin-top:0}
+  .report p{font-size:.95rem;line-height:1.75;color:var(--text);margin-bottom:.75rem}
+  .report ul{margin:.55rem 0 1rem 1.2rem;font-size:.94rem;line-height:1.7}
+  .report li{margin-bottom:.35rem}
+  .subdriver-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:2.4rem}
+  .sd-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .sd-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:10px}
+  .sd-type{font-size:.75rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;color:#fff;padding:2px 10px;border-radius:10px;white-space:nowrap}
+  .sd-name{font-size:.95rem;font-weight:800;line-height:1.3}
+  .sd-bar-wrap{height:6px;background:var(--border);border-radius:3px;overflow:hidden;margin-bottom:6px}
+  .sd-bar{height:100%;border-radius:3px;transition:width 1s ease}
+  .sd-desc{font-size:.81rem;color:var(--muted);line-height:1.55}
+  .validation-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin-bottom:2rem}
+  .validation-card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .validation-card h4{font-size:.82rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.55rem}
+  .validation-card p{font-size:.9rem;line-height:1.6;color:var(--text)}
+  .restart-btn{display:block;width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:4px;font-size:1rem;font-weight:700;cursor:pointer;text-align:center;margin-top:1rem;transition:all .2s}
+  .restart-btn:hover{background:#1a2536}
+  .preview-note{max-width:880px;margin:0 auto;background:#fff8e1;border:1px solid #ead99a;color:#4f4219;padding:12px 16px;border-radius:8px;font-size:.86rem;line-height:1.5;margin-top:1rem}
+  @media(max-width:640px){
+    .profile-row{grid-template-columns:1fr 62px;gap:10px}
+    .pr-bar-wrap{grid-column:1/-1;grid-row:2}
+    .pr-strength{grid-column:1/-1}
+  }
+  .action-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1rem}
+  .pdf-btn{display:block;width:100%;padding:14px;background:var(--gold);color:#1f1a0b;border:none;border-radius:4px;font-size:1rem;font-weight:800;cursor:pointer;text-align:center;transition:all .2s}
+  .pdf-btn:hover{filter:brightness(.95)}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;padding:18px;z-index:9999}
+  .modal-backdrop.is-open{display:flex}
+  .modal-box{width:min(460px,100%);background:#fff;border-radius:12px;border:1px solid var(--border);box-shadow:0 20px 70px rgba(0,0,0,.22);padding:24px}
+  .modal-box h2{font-family:'DM Serif Display',serif;font-size:1.55rem;margin-bottom:.35rem;color:var(--accent)}
+  .modal-box p{font-size:.9rem;color:var(--muted);line-height:1.55;margin-bottom:1rem}
+  .modal-field{display:grid;gap:6px;margin-bottom:12px}
+  .modal-field label{font-size:.8rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+  .modal-field input{width:100%;border:1px solid var(--border);border-radius:6px;padding:12px 13px;font-size:.95rem;font-family:'DM Sans',sans-serif;outline:none}
+  .modal-field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,.14)}
+  .modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:1rem}
+  .cancel-btn{padding:12px;border:1px solid var(--border);background:#fff;color:var(--accent);border-radius:4px;font-weight:800;cursor:pointer}
+  .generate-btn{padding:12px;border:none;background:var(--accent);color:#fff;border-radius:4px;font-weight:800;cursor:pointer}
+  .report-person-header{background:#fff;border:1px solid var(--border);border-radius:10px;padding:18px 20px;margin:0 0 1.4rem}
+  .report-person-header h2{font-family:'DM Serif Display',serif;font-size:1.35rem;color:var(--accent);margin-bottom:.45rem}
+  .report-person-header p{font-size:.9rem;line-height:1.6;color:var(--text);margin:0}
+  @media(max-width:640px){.action-row,.modal-actions{grid-template-columns:1fr}}
+  .download-status{display:none;margin-top:12px;font-size:.85rem;line-height:1.45;color:var(--accent);background:#F7F5F0;border:1px solid var(--border);border-radius:6px;padding:10px 12px}
+  .download-status a{font-weight:800;color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="results">
+  <div class="res-header">
+    <p style="opacity:.65;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.5rem">Preview Profile</p>
+    <h1>Social–Conventional Interest Profile</h1>
+    <p>Primary type: Social · Holland Code: SCE</p>
+    <div class="code-display">
+      <div class="code-letter" style="background:#1E8449">S</div>
+      <div class="code-letter" style="background:#2471A3">C</div>
+      <div class="code-letter" style="background:#D35400">E</div>
+    </div>
+  </div>
+
+  <div class="preview-note">
+    This is a populated preview of the result page layout. The numbers and report text below are sample data so the design can be reviewed without completing all 60 questions.
+  </div>
+
+  <div class="res-body">
+    <div class="flag-row">
+      <div class="flag">Clear primary pattern</div>
+      <div class="flag">Strong people-support signal</div>
+      <div class="flag">Structured work preference</div>
+      <div class="flag">Development-ready profile</div>
+    </div>
+
+    <p class="section-title">RIASEC Profile Scores</p>
+    <div class="profile-grid">
+      <div class="profile-row">
+        <div class="pr-label"><span class="pr-dot" style="background:#1E8449"></span>Social</div>
+        <div class="pr-bar-wrap"><div class="pr-bar" style="width:88%;background:#1E8449"></div></div>
+        <div class="pr-pct">88%</div>
+        <div class="pr-strength">Very strong preference for helping, coaching, explaining, and supporting others.</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-label"><span class="pr-dot" style="background:#2471A3"></span>Conventional</div>
+        <div class="pr-bar-wrap"><div class="pr-bar" style="width:76%;background:#2471A3"></div></div>
+        <div class="pr-pct">76%</div>
+        <div class="pr-strength">Strong preference for structure, details, organized information, and clear process.</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-label"><span class="pr-dot" style="background:#D35400"></span>Enterprising</div>
+        <div class="pr-bar-wrap"><div class="pr-bar" style="width:69%;background:#D35400"></div></div>
+        <div class="pr-pct">69%</div>
+        <div class="pr-strength">Moderate-to-strong interest in influencing, leading, presenting, and driving decisions.</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-label"><span class="pr-dot" style="background:#1A5276"></span>Investigative</div>
+        <div class="pr-bar-wrap"><div class="pr-bar" style="width:58%;background:#1A5276"></div></div>
+        <div class="pr-pct">58%</div>
+        <div class="pr-strength">Moderate preference for analysis, research, and evidence-based problem solving.</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-label"><span class="pr-dot" style="background:#7D3C98"></span>Artistic</div>
+        <div class="pr-bar-wrap"><div class="pr-bar" style="width:42%;background:#7D3C98"></div></div>
+        <div class="pr-pct">42%</div>
+        <div class="pr-strength">Some interest in creative presentation, but not the leading driver in this profile.</div>
+      </div>
+      <div class="profile-row">
+        <div class="pr-label"><span class="pr-dot" style="background:#C0392B"></span>Realistic</div>
+        <div class="pr-bar-wrap"><div class="pr-bar" style="width:31%;background:#C0392B"></div></div>
+        <div class="pr-pct">31%</div>
+        <div class="pr-strength">Lower preference for hands-on mechanical or physical task environments.</div>
+      </div>
+    </div>
+
+    <p class="section-title">RIASEC Profile Report</p>
+    <div class="report">
+      <h3>Your Core Pattern</h3>
+      <p>Your strongest pattern points toward work that combines people support with order, accuracy, and practical follow-through. You are likely energized by roles where people need guidance, processes need clarity, and outcomes improve because someone made the system easier to follow.</p>
+    </div>
+
+    <p class="section-title">Strongest Work Drivers</p>
+    <div class="subdriver-grid">
+      <div class="sd-card">
+        <div class="sd-head"><div class="sd-name">Teaching Drive</div><div class="sd-type" style="background:#1E8449">Social</div></div>
+        <div class="sd-bar-wrap"><div class="sd-bar" style="width:92%;background:#1E8449"></div></div>
+        <div class="sd-desc">Interest in explaining, training, mentoring, and helping others build competence.</div>
+      </div>
+      <div class="sd-card">
+        <div class="sd-head"><div class="sd-name">Detail Orientation</div><div class="sd-type" style="background:#2471A3">Conventional</div></div>
+        <div class="sd-bar-wrap"><div class="sd-bar" style="width:84%;background:#2471A3"></div></div>
+        <div class="sd-desc">Satisfaction from precision, checking, accuracy, and getting the small things right.</div>
+      </div>
+      <div class="sd-card">
+        <div class="sd-head"><div class="sd-name">Collaborative Spirit</div><div class="sd-type" style="background:#1E8449">Social</div></div>
+        <div class="sd-bar-wrap"><div class="sd-bar" style="width:81%;background:#1E8449"></div></div>
+        <div class="sd-desc">Preference for shared goals, team dialogue, and working through people.</div>
+      </div>
+      <div class="sd-card">
+        <div class="sd-head"><div class="sd-name">Process Adherence</div><div class="sd-type" style="background:#2471A3">Conventional</div></div>
+        <div class="sd-bar-wrap"><div class="sd-bar" style="width:78%;background:#2471A3"></div></div>
+        <div class="sd-desc">Preference for documented steps, rules, quality controls, and reliable routines.</div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="pdf-btn" id="openPdfModalBtn" type="button">Generate this report in PDF</button>
+      <button class="restart-btn" type="button">Start New Assessment</button>
+    </div>
+    <div style="height:2rem"></div>
+  </div>
+</div>
+<div class="modal-backdrop" id="pdfModal" aria-hidden="true">
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="pdfModalTitle">
+    <h2 id="pdfModalTitle">Generate PDF Report</h2>
+    <p>Add the employee details below. They will appear at the top of the downloaded report.</p>
+    <div class="modal-field">
+      <label for="pdfFirstName">First Name</label>
+      <input id="pdfFirstName" type="text" autocomplete="given-name" placeholder="First name" />
+    </div>
+    <div class="modal-field">
+      <label for="pdfLastName">Last Name</label>
+      <input id="pdfLastName" type="text" autocomplete="family-name" placeholder="Last name" />
+    </div>
+    <div class="modal-field">
+      <label for="pdfTitle">Title</label>
+      <input id="pdfTitle" type="text" autocomplete="organization-title" placeholder="Job title" />
+    </div>
+    <div class="modal-actions">
+      <button class="cancel-btn" id="cancelPdfBtn" type="button">Cancel</button>
+      <button class="generate-btn" id="generatePdfBtn" type="button">Download PDF</button>
+    </div>
+    <div class="download-status" id="downloadStatus"></div>
+  </div>
+</div>
+
+<script>
+  const openPdfModalBtn = document.getElementById('openPdfModalBtn');
+  const pdfModal = document.getElementById('pdfModal');
+  const cancelPdfBtn = document.getElementById('cancelPdfBtn');
+  const generatePdfBtn = document.getElementById('generatePdfBtn');
+  const downloadStatus = document.getElementById('downloadStatus');
+  const NL = String.fromCharCode(10);
+  const BS = String.fromCharCode(92);
+
+  function openPdfModal(){
+    pdfModal.classList.add('is-open');
+    pdfModal.setAttribute('aria-hidden','false');
+    downloadStatus.style.display = 'none';
+    downloadStatus.innerHTML = '';
+    document.getElementById('pdfFirstName').focus();
+  }
+
+  function closePdfModal(){
+    pdfModal.classList.remove('is-open');
+    pdfModal.setAttribute('aria-hidden','true');
+  }
+
+  function cleanText(value){
+    let text = String(value || '');
+    const replacements = {
+      '‘': "'",
+      '’': "'",
+      '“': '"',
+      '”': '"',
+      '–': '-',
+      '—': '-',
+      '·': '-'
+    };
+    let output = '';
+    for(let i = 0; i < text.length; i++){
+      let ch = replacements[text[i]] || text[i];
+      const code = ch.charCodeAt(0);
+      if(code === 9 || code === 10 || code === 13){
+        output += ' ';
+      } else if(code >= 32 && code <= 126){
+        output += ch;
+      }
+    }
+    return output;
+  }
+
+  function pdfEscape(value){
+    const text = cleanText(value);
+    let output = '';
+    for(let i = 0; i < text.length; i++){
+      const ch = text[i];
+      if(ch === BS){
+        output += BS + BS;
+      } else if(ch === '('){
+        output += BS + '(';
+      } else if(ch === ')'){
+        output += BS + ')';
+      } else {
+        output += ch;
+      }
+    }
+    return output;
+  }
+
+  function wrapText(text, maxChars){
+    const words = cleanText(text).split(' ').filter(Boolean);
+    const lines = [];
+    let line = '';
+    words.forEach(function(word){
+      const test = line ? line + ' ' + word : word;
+      if(test.length > maxChars){
+        if(line) lines.push(line);
+        line = word;
+      } else {
+        line = test;
+      }
+    });
+    if(line) lines.push(line);
+    return lines;
+  }
+
+  function getReportLines(){
+    const firstName = document.getElementById('pdfFirstName').value.trim() || 'First Name';
+    const lastName = document.getElementById('pdfLastName').value.trim() || 'Last Name';
+    const title = document.getElementById('pdfTitle').value.trim() || 'Not provided';
+    const today = new Date().toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'});
+
+    const lines = [];
+    lines.push({text:'RIASEC Profile Report', size:20, gap:24});
+    lines.push({text:'Name: ' + firstName + ' ' + lastName, size:12, gap:16});
+    lines.push({text:'Title: ' + title, size:12, gap:16});
+    lines.push({text:'Report Date: ' + today, size:12, gap:28});
+
+    lines.push({text:'Profile Summary', size:15, gap:20});
+    lines.push({text:'Profile: Social-Conventional Interest Profile', size:11, gap:15});
+    lines.push({text:'Primary type: Social', size:11, gap:15});
+    lines.push({text:'Holland Code: SCE', size:11, gap:24});
+
+    lines.push({text:'RIASEC Profile Scores', size:15, gap:20});
+    document.querySelectorAll('.profile-row').forEach(function(row){
+      const labelEl = row.querySelector('.pr-label');
+      const pctEl = row.querySelector('.pr-pct');
+      const strengthEl = row.querySelector('.pr-strength');
+      const label = labelEl ? labelEl.innerText : '';
+      const pct = pctEl ? pctEl.innerText : '';
+      const strength = strengthEl ? strengthEl.innerText : '';
+      lines.push({text:label + ': ' + pct, size:11, gap:15});
+      wrapText(strength, 88).forEach(function(wrapped){
+        lines.push({text:'  ' + wrapped, size:10, gap:13});
+      });
+      lines.push({text:'', size:10, gap:6});
+    });
+
+    lines.push({text:'RIASEC Profile Report', size:15, gap:20});
+    document.querySelectorAll('.report h3, .report p').forEach(function(el){
+      if(el.tagName.toLowerCase() === 'h3'){
+        lines.push({text:el.innerText, size:13, gap:18});
+      } else {
+        wrapText(el.innerText, 88).forEach(function(wrapped){
+          lines.push({text:wrapped, size:10, gap:13});
+        });
+        lines.push({text:'', size:10, gap:6});
+      }
+    });
+
+    lines.push({text:'Strongest Work Drivers', size:15, gap:20});
+    document.querySelectorAll('.sd-card').forEach(function(card){
+      const nameEl = card.querySelector('.sd-name');
+      const typeEl = card.querySelector('.sd-type');
+      const descEl = card.querySelector('.sd-desc');
+      const name = nameEl ? nameEl.innerText : '';
+      const type = typeEl ? typeEl.innerText : '';
+      const desc = descEl ? descEl.innerText : '';
+      lines.push({text:name + ' - ' + type, size:11, gap:15});
+      wrapText(desc, 88).forEach(function(wrapped){
+        lines.push({text:'  ' + wrapped, size:10, gap:13});
+      });
+      lines.push({text:'', size:10, gap:6});
+    });
+
+    return {lines:lines, firstName:firstName, lastName:lastName};
+  }
+
+  function buildPdfDocument(report){
+    const pageWidth = 612;
+    const pageHeight = 792;
+    const marginLeft = 54;
+    const startY = 738;
+    const bottomY = 54;
+    const pages = [];
+    let streamLines = [];
+    let y = startY;
+
+    function startPage(){
+      streamLines = ['BT'];
+      y = startY;
+    }
+
+    function endPage(){
+      streamLines.push('ET');
+      pages.push(streamLines.join(NL));
+    }
+
+    startPage();
+    report.lines.forEach(function(item){
+      const gap = item.gap || 14;
+      if(y - gap < bottomY){
+        endPage();
+        startPage();
+      }
+      const size = item.size || 10;
+      streamLines.push('/F1 ' + size + ' Tf');
+      streamLines.push('1 0 0 1 ' + marginLeft + ' ' + y + ' Tm');
+      streamLines.push('(' + pdfEscape(item.text) + ') Tj');
+      y -= gap;
+    });
+    endPage();
+
+    const objects = [];
+    function addObject(content){
+      objects.push(content);
+      return objects.length;
+    }
+
+    const catalogId = addObject('<< /Type /Catalog /Pages 2 0 R >>');
+    const pagesId = addObject('');
+    const fontId = addObject('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+    const pageIds = [];
+
+    pages.forEach(function(content){
+      const contentId = addObject('<< /Length ' + content.length + ' >>' + NL + 'stream' + NL + content + NL + 'endstream');
+      const pageId = addObject('<< /Type /Page /Parent ' + pagesId + ' 0 R /MediaBox [0 0 ' + pageWidth + ' ' + pageHeight + '] /Resources << /Font << /F1 ' + fontId + ' 0 R >> >> /Contents ' + contentId + ' 0 R >>');
+      pageIds.push(pageId);
+    });
+
+    objects[pagesId - 1] = '<< /Type /Pages /Kids [' + pageIds.map(function(id){return id + ' 0 R';}).join(' ') + '] /Count ' + pageIds.length + ' >>';
+
+    let pdf = '%PDF-1.4' + NL;
+    const offsets = [0];
+    objects.forEach(function(obj, index){
+      offsets.push(pdf.length);
+      pdf += (index + 1) + ' 0 obj' + NL + obj + NL + 'endobj' + NL;
+    });
+
+    const xrefOffset = pdf.length;
+    pdf += 'xref' + NL + '0 ' + (objects.length + 1) + NL;
+    pdf += '0000000000 65535 f ' + NL;
+    for(let i = 1; i < offsets.length; i++){
+      pdf += String(offsets[i]).padStart(10, '0') + ' 00000 n ' + NL;
+    }
+    pdf += 'trailer' + NL + '<< /Size ' + (objects.length + 1) + ' /Root ' + catalogId + ' 0 R >>' + NL;
+    pdf += 'startxref' + NL + xrefOffset + NL + '%%EOF';
+    return pdf;
+  }
+
+  function safeFilePart(value){
+    const text = cleanText(value).trim();
+    let output = '';
+    let lastUnderscore = false;
+    for(let i = 0; i < text.length; i++){
+      const ch = text[i];
+      const code = ch.charCodeAt(0);
+      const isNumber = code >= 48 && code <= 57;
+      const isUpper = code >= 65 && code <= 90;
+      const isLower = code >= 97 && code <= 122;
+      if(isNumber || isUpper || isLower){
+        output += ch;
+        lastUnderscore = false;
+      } else if(output && !lastUnderscore){
+        output += '_';
+        lastUnderscore = true;
+      }
+    }
+    while(output.endsWith('_')) output = output.slice(0, -1);
+    return output;
+  }
+
+  function generatePdfReport(){
+    const report = getReportLines();
+    const pdf = buildPdfDocument(report);
+    const fileName = ['RIASEC_Profile_Report', safeFilePart(report.firstName), safeFilePart(report.lastName)].filter(Boolean).join('_') + '.pdf';
+    const blob = new Blob([pdf], {type:'application/pdf'});
+    const blobUrl = URL.createObjectURL(blob);
+
+    downloadStatus.style.display = 'block';
+    downloadStatus.innerHTML =
+      'PDF is ready. Use one of the buttons below. If this preview blocks the file, publish/open the page directly in Chrome and it will work normally.' +
+      '<br><br>' +
+      '<a href="' + blobUrl + '" target="_blank" rel="noopener" style="display:inline-block;margin-right:8px;padding:10px 14px;background:#2C3E50;color:#fff;text-decoration:none;border-radius:4px;">Open PDF</a>' +
+      '<a href="' + blobUrl + '" download="' + fileName + '" style="display:inline-block;padding:10px 14px;background:#C9A84C;color:#1f1a0b;text-decoration:none;border-radius:4px;font-weight:800;">Download PDF</a>';
+  }
+
+  openPdfModalBtn.addEventListener('click', openPdfModal);
+  cancelPdfBtn.addEventListener('click', closePdfModal);
+  generatePdfBtn.addEventListener('click', generatePdfReport);
+
+  pdfModal.addEventListener('click', function(event){
+    if(event.target === pdfModal) closePdfModal();
+  });
+
+  document.addEventListener('keydown', function(event){
+    if(event.key === 'Escape' && pdfModal.classList.contains('is-open')) closePdfModal();
+  });
+</script>
+</body>
+</html>
