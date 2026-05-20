@@ -1,10 +1,40 @@
 var TYPES = {
-  R: { name: "Realistic", color: "#C0392B", definition: "practical, hands-on work with tools, machines, real materials, and physical problem-solving", sub: ["Hands-On Execution", "Mechanical Aptitude", "Outdoor Orientation", "Technical Problem-Solving"] },
-  I: { name: "Investigative", color: "#1A5276", definition: "research, analysis, ideas, evidence, and mentally challenging problem-solving", sub: ["Analytical Thinking", "Research Drive", "Systematic Inquiry", "Intellectual Curiosity"] },
-  A: { name: "Artistic", color: "#7D3C98", definition: "creativity, self-expression, design, originality, and flexible work without rigid rules", sub: ["Creative Expression", "Aesthetic Sensitivity", "Originality", "Unstructured Thinking"] },
-  S: { name: "Social", color: "#1E8449", definition: "helping, teaching, coaching, supporting, and developing other people", sub: ["Helping Orientation", "Empathic Engagement", "Teaching Drive", "Collaborative Spirit"] },
-  E: { name: "Enterprising", color: "#D35400", definition: "leading, influencing, persuading, selling, managing, and making business decisions", sub: ["Leadership Drive", "Persuasive Communication", "Risk Tolerance", "Strategic Vision"] },
-  C: { name: "Conventional", color: "#2471A3", definition: "organized, accurate, structured work with data, standards, rules, and clear procedures", sub: ["Detail Orientation", "Process Adherence", "Data Management", "Organizational Structure"] }
+  R: {
+    name: "Realistic",
+    color: "#C0392B",
+    definition: "practical, hands-on work with tools, machines, real materials, and physical problem-solving",
+    sub: ["Hands-On Execution", "Mechanical Aptitude", "Outdoor Orientation", "Technical Problem-Solving"]
+  },
+  I: {
+    name: "Investigative",
+    color: "#1A5276",
+    definition: "research, analysis, ideas, evidence, and mentally challenging problem-solving",
+    sub: ["Analytical Thinking", "Research Drive", "Systematic Inquiry", "Intellectual Curiosity"]
+  },
+  A: {
+    name: "Artistic",
+    color: "#7D3C98",
+    definition: "creativity, self-expression, design, originality, and flexible work without rigid rules",
+    sub: ["Creative Expression", "Aesthetic Sensitivity", "Originality", "Unstructured Thinking"]
+  },
+  S: {
+    name: "Social",
+    color: "#1E8449",
+    definition: "helping, teaching, coaching, supporting, and developing other people",
+    sub: ["Helping Orientation", "Empathic Engagement", "Teaching Drive", "Collaborative Spirit"]
+  },
+  E: {
+    name: "Enterprising",
+    color: "#D35400",
+    definition: "leading, influencing, persuading, selling, managing, and making business decisions",
+    sub: ["Leadership Drive", "Persuasive Communication", "Risk Tolerance", "Strategic Vision"]
+  },
+  C: {
+    name: "Conventional",
+    color: "#2471A3",
+    definition: "organized, accurate, structured work with data, standards, rules, and clear procedures",
+    sub: ["Detail Orientation", "Process Adherence", "Data Management", "Organizational Structure"]
+  }
 };
 
 var SUB_DESC = {
@@ -12,22 +42,27 @@ var SUB_DESC = {
   "Mechanical Aptitude": "Interest in tools, equipment, machines, technical systems, and how things physically work.",
   "Outdoor Orientation": "Energy from field work, site-based work, movement, and less desk-bound environments.",
   "Technical Problem-Solving": "Comfort diagnosing, fixing, and improving practical systems or equipment.",
+
   "Analytical Thinking": "Preference for breaking problems down, evaluating evidence, and finding logical patterns.",
   "Research Drive": "Interest in gathering information deeply before making conclusions or recommendations.",
   "Systematic Inquiry": "Comfort using structured methods, hypotheses, tests, and careful investigation.",
   "Intellectual Curiosity": "Natural pull toward ideas, learning, complexity, and deeper understanding.",
+
   "Creative Expression": "Motivation to create original work through writing, design, media, art, or concepts.",
   "Aesthetic Sensitivity": "Attention to form, design, beauty, tone, and the emotional quality of presentation.",
   "Originality": "Drive to challenge ordinary solutions and produce ideas that feel fresh or different.",
   "Unstructured Thinking": "Comfort working through ambiguity, open-ended problems, and flexible methods.",
+
   "Helping Orientation": "Satisfaction from improving someone else's situation, experience, or capability.",
   "Empathic Engagement": "Ability and desire to notice people's emotions, needs, and interpersonal signals.",
   "Teaching Drive": "Interest in explaining, training, mentoring, and helping others build competence.",
   "Collaborative Spirit": "Preference for shared goals, team dialogue, and working through people.",
+
   "Leadership Drive": "Interest in directing effort, organizing people, and taking responsibility for outcomes.",
   "Persuasive Communication": "Energy from influencing, presenting, advocating, selling, or gaining buy-in.",
   "Risk Tolerance": "Comfort with uncertainty, competition, visibility, and bold decisions.",
   "Strategic Vision": "Interest in big-picture direction, growth opportunities, and future positioning.",
+
   "Detail Orientation": "Satisfaction from precision, accuracy, checking, and getting the small things right.",
   "Process Adherence": "Preference for documented steps, rules, quality controls, and reliable routines.",
   "Data Management": "Interest in organizing, maintaining, and improving structured information systems.",
@@ -43,25 +78,66 @@ var SCALE_OPTIONS = [
 ];
 
 var TYPE_SUGGESTIONS = {
-  R: { training: "Technical labs, equipment training, field safety, troubleshooting methods.", projects: "Prototype fixes, field inspections, process improvement, tool or system optimization.", coaching: "Work with a technical mentor who can sharpen diagnosis and execution.", career: "Operations, engineering support, technical service, skilled trades, facilities, field-based roles." },
-  I: { training: "Research methods, data analysis, critical thinking, experimentation, technical writing.", projects: "Root-cause analysis, vendor comparison, process research, metrics investigation.", coaching: "Partner with an analytical mentor who challenges assumptions and evidence quality.", career: "Analytics, research, engineering, strategy, science, technical consulting, investigation-heavy roles." },
-  A: { training: "Design thinking, communication design, storytelling, creative tools, UX basics.", projects: "Campaign concepts, content design, experience redesign, visual or written communication.", coaching: "Work with a creative reviewer who gives feedback without over-structuring the work.", career: "Marketing, design, content, communications, media, product experience, creative strategy." },
-  S: { training: "Coaching skills, facilitation, conflict resolution, instructional design, emotional intelligence.", projects: "Mentoring programs, onboarding support, training delivery, employee experience improvements.", coaching: "Partner with a people leader who helps balance support with boundaries.", career: "HR, learning and development, education, counseling, customer success, community roles." },
-  E: { training: "Leadership, negotiation, sales, executive communication, business strategy.", projects: "Lead initiatives, pitch improvements, manage stakeholders, own growth or change efforts.", coaching: "Work with a leader who can sharpen influence, prioritization, and decision discipline.", career: "Management, sales, entrepreneurship, business development, politics, executive-track roles." },
-  C: { training: "Project management, compliance, data governance, Excel/reporting, audit methods.", projects: "Build dashboards, standard operating procedures, tracking systems, quality-control processes.", coaching: "Partner with an operations or compliance mentor who values precision and scalability.", career: "Finance, accounting, operations, compliance, HR operations, IT administration, office management." }
+  R: {
+    training: "Technical labs, equipment training, field safety, troubleshooting methods.",
+    projects: "Prototype fixes, field inspections, process improvement, tool or system optimization.",
+    coaching: "Work with a technical mentor who can sharpen diagnosis and execution.",
+    career: "Operations, engineering support, technical service, skilled trades, facilities, field-based roles."
+  },
+  I: {
+    training: "Research methods, data analysis, critical thinking, experimentation, technical writing.",
+    projects: "Root-cause analysis, vendor comparison, process research, metrics investigation.",
+    coaching: "Partner with an analytical mentor who challenges assumptions and evidence quality.",
+    career: "Analytics, research, engineering, strategy, science, technical consulting, investigation-heavy roles."
+  },
+  A: {
+    training: "Design thinking, communication design, storytelling, creative tools, UX basics.",
+    projects: "Campaign concepts, content design, experience redesign, visual or written communication.",
+    coaching: "Work with a creative reviewer who gives feedback without over-structuring the work.",
+    career: "Marketing, design, content, communications, media, product experience, creative strategy."
+  },
+  S: {
+    training: "Coaching skills, facilitation, conflict resolution, instructional design, emotional intelligence.",
+    projects: "Mentoring programs, onboarding support, training delivery, employee experience improvements.",
+    coaching: "Partner with a people leader who helps balance support with boundaries.",
+    career: "HR, learning and development, education, counseling, customer success, community roles."
+  },
+  E: {
+    training: "Leadership, negotiation, sales, executive communication, business strategy.",
+    projects: "Lead initiatives, pitch improvements, manage stakeholders, own growth or change efforts.",
+    coaching: "Work with a leader who can sharpen influence, prioritization, and decision discipline.",
+    career: "Management, sales, entrepreneurship, business development, politics, executive-track roles."
+  },
+  C: {
+    training: "Project management, compliance, data governance, Excel/reporting, audit methods.",
+    projects: "Build dashboards, standard operating procedures, tracking systems, quality-control processes.",
+    coaching: "Partner with an operations or compliance mentor who values precision and scalability.",
+    career: "Finance, accounting, operations, compliance, HR operations, IT administration, office management."
+  }
 };
 
 var QUESTION_BANK = [];
 
 function addLikert(type, sd, style, q) {
-  QUESTION_BANK.push({ mode: "likert", type: type, sd: sd, style: style, q: q });
+  QUESTION_BANK.push({
+    mode: "likert",
+    type: type,
+    sd: sd,
+    style: style,
+    q: q
+  });
 }
 
 function addForced(q, opts) {
-  QUESTION_BANK.push({ mode: "forced", style: "Forced Choice", q: q, opts: opts });
+  QUESTION_BANK.push({
+    mode: "forced",
+    style: "Forced Choice",
+    q: q,
+    opts: opts
+  });
 }
 
-// Realistic
+/* Realistic */
 addLikert("R", "Hands-On Execution", "Activity Preference", "Rate how appealing this activity is: assembling, repairing, or calibrating physical equipment until it works correctly.");
 addLikert("R", "Mechanical Aptitude", "Activity Preference", "Rate how appealing this activity is: taking apart a malfunctioning tool or device to understand what went wrong.");
 addLikert("R", "Outdoor Orientation", "Activity Preference", "Rate how appealing this work setting is: spending much of the day at field sites, job sites, or physical work areas instead of at a desk.");
@@ -71,7 +147,7 @@ addLikert("R", "Mechanical Aptitude", "Situational Judgment", "A colleague says 
 addLikert("R", "Outdoor Orientation", "Activity Preference", "Rate how appealing this role is: moving between work sites, inspecting conditions, and solving practical problems in changing environments.");
 addLikert("R", "Technical Problem-Solving", "Activity Preference", "Rate how appealing this task is: diagnosing a practical failure, testing possible causes, and fixing the issue with your hands.");
 
-// Investigative
+/* Investigative */
 addLikert("I", "Analytical Thinking", "Activity Preference", "Rate how appealing this activity is: breaking a complex problem into parts and analyzing each piece before recommending a solution.");
 addLikert("I", "Research Drive", "Activity Preference", "Rate how appealing this task is: spending several hours researching a topic deeply before forming an opinion.");
 addLikert("I", "Systematic Inquiry", "Situational Judgment", "Customer retention drops unexpectedly. Rate how likely you are to build hypotheses, gather data, and test possible explanations.");
@@ -81,7 +157,7 @@ addLikert("I", "Research Drive", "Situational Judgment", "Before choosing betwee
 addLikert("I", "Systematic Inquiry", "Activity Preference", "Rate how appealing this learning style is: building a foundation first, then moving step-by-step into more complex material.");
 addLikert("I", "Intellectual Curiosity", "Activity Preference", "Rate how appealing this project is: exploring an emerging topic with no immediate payoff, just to understand it better.");
 
-// Artistic
+/* Artistic */
 addLikert("A", "Creative Expression", "Activity Preference", "Rate how appealing this activity is: writing, designing, illustrating, composing, or producing something original.");
 addLikert("A", "Aesthetic Sensitivity", "Activity Preference", "Rate how much you enjoy improving the look, tone, layout, or emotional feel of a document, space, product, or message.");
 addLikert("A", "Originality", "Situational Judgment", "A team asks for a campaign idea. Rate how likely you are to push for a fresh concept instead of repeating what competitors already do.");
@@ -91,7 +167,7 @@ addLikert("A", "Aesthetic Sensitivity", "Situational Judgment", "A report is acc
 addLikert("A", "Originality", "Activity Preference", "Rate how appealing this problem-solving approach is: generating unconventional ideas before narrowing down to practical options.");
 addLikert("A", "Unstructured Thinking", "Situational Judgment", "A project has no clear process yet. Rate how comfortable you are starting anyway and shaping the work as it develops.");
 
-// Social
+/* Social */
 addLikert("S", "Helping Orientation", "Activity Preference", "Rate how appealing this work is: directly helping someone improve their situation, confidence, or capability.");
 addLikert("S", "Empathic Engagement", "Situational Judgment", "A team member becomes withdrawn during a stressful week. Rate how likely you are to check in privately and understand what is happening.");
 addLikert("S", "Teaching Drive", "Activity Preference", "Rate how appealing this activity is: explaining a difficult concept until another person finally understands it.");
@@ -101,7 +177,7 @@ addLikert("S", "Empathic Engagement", "Activity Preference", "Rate how often you
 addLikert("S", "Teaching Drive", "Situational Judgment", "A junior employee keeps making the same mistake. Rate how likely you are to coach them step-by-step instead of simply correcting the work.");
 addLikert("S", "Collaborative Spirit", "Activity Preference", "Rate how appealing this environment is: regular discussion, shared decisions, and group accountability for outcomes.");
 
-// Enterprising
+/* Enterprising */
 addLikert("E", "Leadership Drive", "Activity Preference", "Rate how appealing this responsibility is: coordinating people, setting direction, and being accountable for results.");
 addLikert("E", "Persuasive Communication", "Situational Judgment", "You believe the current strategy is wrong. Rate how likely you are to build a strong case and actively advocate for a different direction.");
 addLikert("E", "Risk Tolerance", "Activity Preference", "Rate how appealing this environment is: high visibility, competitive pressure, and decisions with uncertain outcomes.");
@@ -111,7 +187,7 @@ addLikert("E", "Persuasive Communication", "Activity Preference", "Rate how appe
 addLikert("E", "Risk Tolerance", "Situational Judgment", "A high-reward project needs a champion, but success is uncertain. Rate how willing you are to take the lead.");
 addLikert("E", "Strategic Vision", "Situational Judgment", "Your team is focused on daily tasks. Rate how likely you are to redirect attention to long-term opportunities, growth, and positioning.");
 
-// Conventional
+/* Conventional */
 addLikert("C", "Detail Orientation", "Activity Preference", "Rate how appealing this task is: auditing a complex report until every error, mismatch, or missing detail is corrected.");
 addLikert("C", "Process Adherence", "Situational Judgment", "A team wants to skip a quality-control step to save time. Rate how likely you are to defend the process and prevent unnecessary risk.");
 addLikert("C", "Data Management", "Activity Preference", "Rate how appealing this activity is: organizing, categorizing, cleaning, and maintaining structured information.");
@@ -121,7 +197,7 @@ addLikert("C", "Process Adherence", "Activity Preference", "Rate how appealing t
 addLikert("C", "Data Management", "Situational Judgment", "A team's tracking system is inconsistent. Rate how likely you are to build a cleaner system with standard fields and rules.");
 addLikert("C", "Organizational Structure", "Situational Judgment", "A new project begins with unclear ownership. Rate how likely you are to create a plan, timeline, and responsibility map.");
 
-// Forced choice
+/* Forced Choice */
 addForced("A new cross-functional project opens. Which role would you naturally choose first?", [
   { type: "R", sd: "Hands-On Execution", text: "Build or test the practical solution." },
   { type: "I", sd: "Analytical Thinking", text: "Investigate the problem and compare evidence." },
@@ -231,5 +307,5 @@ addForced("When choosing a future role, which feature matters most?", [
 ]);
 
 if (QUESTION_BANK.length !== 60) {
-  console.error("QUESTION_BANK should be 60 questions. Current count:", QUESTION_BANK.length);
+  console.error("QUESTION_BANK should be 60. Current count:", QUESTION_BANK.length);
 }
