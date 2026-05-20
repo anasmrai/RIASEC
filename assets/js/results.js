@@ -14,11 +14,19 @@ function resultSafeText(value) {
 function ensureLatestResultLayout() {
   var resultsScreen = document.getElementById("results");
 
+  if (!resultsScreen) {
+    console.error("Results screen was not found.");
+    return;
+  }
+
   resultsScreen.innerHTML = `
     <div class="res-header">
       <p id="res-name-label" class="res-label">Your Profile</p>
+
       <h1 id="res-title">Interest Profile</h1>
+
       <p id="res-subtitle">Primary type · Holland Code</p>
+
       <div id="code-display" class="code-display"></div>
     </div>
 
@@ -33,11 +41,21 @@ function ensureLatestResultLayout() {
       <div id="subdriver-grid" class="subdriver-grid"></div>
 
       <div class="action-row">
-        <button id="openPdfModalBtn" class="pdf-btn" type="button" onclick="openPdfModal()">
+        <button
+          id="openPdfModalBtn"
+          class="pdf-btn"
+          type="button"
+          onclick="openPdfModal()"
+        >
           Generate this report in PDF
         </button>
 
-        <button id="restartBtn" class="restart-btn" type="button" onclick="restartAssessment()">
+        <button
+          id="restartBtn"
+          class="restart-btn"
+          type="button"
+          onclick="restartAssessment()"
+        >
           Start New Assessment
         </button>
       </div>
@@ -57,7 +75,9 @@ function renderResults(results) {
 
   var primary = results.primary;
   var secondary = results.secondary;
-  var hollandCode = results.hollandCode;
+  var hollandCode = results.hollandCode || "";
+
+  document.getElementById("res-name-label").textContent = "Your Profile";
 
   document.getElementById("res-title").textContent =
     primary.name + "–" + secondary.name + " Interest Profile";
@@ -75,8 +95,12 @@ function renderHollandCode(results) {
   var codeDisplay = document.getElementById("code-display");
   codeDisplay.innerHTML = "";
 
-  results.hollandCode.split("").forEach(function (letter) {
+  var code = results.hollandCode || "";
+
+  code.split("").forEach(function (letter) {
     var type = TYPES[letter];
+
+    if (!type) return;
 
     var box = document.createElement("div");
     box.className = "code-letter";
@@ -143,6 +167,7 @@ function renderProfileReport(results) {
 
   report.innerHTML =
     '<h3>Your Core Pattern</h3>' +
+
     '<p>' +
       'Your strongest pattern points toward work that combines ' +
       resultSafeText(primary.definition) +
@@ -156,7 +181,13 @@ function renderStrongestWorkDrivers(results) {
   var grid = document.getElementById("subdriver-grid");
   grid.innerHTML = "";
 
-  var drivers = results.topDrivers || [];
+  var drivers = [];
+
+  if (results.topDrivers && results.topDrivers.length) {
+    drivers = results.topDrivers;
+  } else if (results.subdriverScores && results.subdriverScores.length) {
+    drivers = results.subdriverScores.slice(0, 4);
+  }
 
   drivers.forEach(function (driver) {
     var card = document.createElement("div");
@@ -164,7 +195,10 @@ function renderStrongestWorkDrivers(results) {
 
     card.innerHTML =
       '<div class="sd-head">' +
-        '<div class="sd-name">' + resultSafeText(driver.name) + '</div>' +
+        '<div class="sd-name">' +
+          resultSafeText(driver.name) +
+        '</div>' +
+
         '<div class="sd-type" style="background:' + driver.color + '">' +
           resultSafeText(driver.typeName) +
         '</div>' +
