@@ -25,7 +25,12 @@
         It combines activity preferences, workplace scenarios, and forced-choice decisions.
       </p>
 
-      <button id="beginAssessmentBtn" class="start-btn" type="button">
+      <button
+        id="beginAssessmentBtn"
+        class="start-btn"
+        type="button"
+        onclick="showScreen('intake')"
+      >
         Begin Assessment →
       </button>
 
@@ -58,7 +63,12 @@
         </div>
       </div>
 
-      <button id="start-assess" class="next-btn" type="button">
+      <button
+        id="start-assess"
+        class="next-btn"
+        type="button"
+        onclick="startAssessment()"
+      >
         Start Assessment →
       </button>
     </div>
@@ -87,7 +97,15 @@
     </div>
 
     <div class="assess-footer">
-      <button id="prev-btn" class="prev-btn" type="button">← Back</button>
+      <button
+        id="prev-btn"
+        class="prev-btn"
+        type="button"
+        onclick="prevQuestion()"
+      >
+        ← Back
+      </button>
+
       <div id="q-style-label"></div>
     </div>
   </section>
@@ -114,7 +132,9 @@
   <section id="results" class="screen">
     <div class="res-header">
       <p id="res-name-label" class="res-label">Your Profile</p>
+
       <h1 id="res-title">Interest Profile</h1>
+
       <p id="res-subtitle">Primary type · Holland Code</p>
 
       <div id="code-display" class="code-display"></div>
@@ -131,11 +151,21 @@
       <div id="subdriver-grid" class="subdriver-grid"></div>
 
       <div class="action-row">
-        <button id="openPdfModalBtn" class="pdf-btn" type="button">
+        <button
+          id="openPdfModalBtn"
+          class="pdf-btn"
+          type="button"
+          onclick="openPdfModal()"
+        >
           Generate this report in PDF
         </button>
 
-        <button id="restartBtn" class="restart-btn" type="button">
+        <button
+          id="restartBtn"
+          class="restart-btn"
+          type="button"
+          onclick="restartAssessment()"
+        >
           Start New Assessment
         </button>
       </div>
@@ -148,7 +178,15 @@
     <div class="modal-box">
       <div class="modal-header">
         <h2>Generate PDF Report</h2>
-        <button id="closePdfModalBtn" class="modal-close-btn" type="button">×</button>
+
+        <button
+          id="closePdfModalBtn"
+          class="modal-close-btn"
+          type="button"
+          onclick="closePdfModal()"
+        >
+          ×
+        </button>
       </div>
 
       <p>Add the employee details below.</p>
@@ -169,8 +207,23 @@
       </div>
 
       <div class="modal-actions">
-        <button id="cancelPdfBtn" class="cancel-btn" type="button">Exit</button>
-        <button id="generatePdfBtn" class="generate-btn" type="button">Generate PDF</button>
+        <button
+          id="cancelPdfBtn"
+          class="cancel-btn"
+          type="button"
+          onclick="closePdfModal()"
+        >
+          Exit
+        </button>
+
+        <button
+          id="generatePdfBtn"
+          class="generate-btn"
+          type="button"
+          onclick="generatePdfReport()"
+        >
+          Generate PDF
+        </button>
       </div>
 
       <div id="downloadStatus" class="download-status"></div>
