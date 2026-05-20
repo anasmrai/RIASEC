@@ -82,6 +82,31 @@
   @media(max-width:640px){.action-row,.modal-actions{grid-template-columns:1fr}}
   .download-status{display:none;margin-top:12px;font-size:.85rem;line-height:1.45;color:var(--accent);background:#F7F5F0;border:1px solid var(--border);border-radius:6px;padding:10px 12px}
   .download-status a{font-weight:800;color:var(--accent)}
+  @media screen{
+    .res-header h1{font-size:calc(2.25rem + 3px)}
+    .res-header p{font-size:calc(.95rem + 3px)}
+    .code-letter{font-size:calc(1.45rem + 3px)}
+    .section-title{font-size:calc(1.42rem + 3px)}
+    .pr-label,.pr-pct{font-size:calc(.86rem + 3px)}
+    .pr-strength{font-size:calc(.74rem + 3px)}
+    .flag{font-size:calc(.8rem + 3px)}
+    .report h3{font-size:calc(1.3rem + 3px)}
+    .report p{font-size:calc(.95rem + 3px)}
+    .report ul{font-size:calc(.94rem + 3px)}
+    .sd-type{font-size:calc(.75rem + 3px)}
+    .sd-name{font-size:calc(.95rem + 3px)}
+    .sd-desc{font-size:calc(.81rem + 3px)}
+    .restart-btn,.pdf-btn{font-size:calc(1rem + 3px)}
+    .preview-note{font-size:calc(.86rem + 3px)}
+    .modal-box h2{font-size:calc(1.55rem + 3px)}
+    .modal-box p{font-size:calc(.9rem + 3px)}
+    .modal-field label{font-size:calc(.8rem + 3px)}
+    .modal-field input{font-size:calc(.95rem + 3px)}
+    .cancel-btn,.generate-btn{font-size:calc(1rem + 3px)}
+    .download-status{font-size:calc(.85rem + 3px)}
+    .report-person-header h2{font-size:calc(1.35rem + 3px)}
+    .report-person-header p{font-size:calc(.9rem + 3px)}
+  }
 </style>
 </head>
 <body>
@@ -377,9 +402,10 @@
   function buildStyledPdf(data){
     const pageWidth = 612;
     const pageHeight = 792;
-    const margin = 42;
+    const margin = 48;
     const contentWidth = pageWidth - margin * 2;
-    const bottom = 46;
+    const bottom = 52;
+    const pdfCompact = 0.88;
     const objects = [];
     const pages = [];
     let commands = [];
@@ -408,6 +434,7 @@
     }
 
     function text(value, x, textY, size, color, bold){
+      size = Math.max(6, size - 2);
       commands.push('BT');
       commands.push(rgb(color || pdfColors.text) + ' rg');
       commands.push((bold ? '/F2 ' : '/F1 ') + size + ' Tf');
@@ -444,15 +471,16 @@
     }
 
     function card(x, topY, w, h){
+      h = h * pdfCompact;
       rect(x, topY - h, w, h, pdfColors.card);
       strokeRect(x, topY - h, w, h, pdfColors.border);
     }
 
     function sectionTitle(title){
-      ensure(34);
-      text(title, margin, y, 16, pdfColors.accent, true);
-      line(margin, y - 9, margin + 120, y - 9, pdfColors.gold, 2);
-      y -= 30;
+      ensure(30);
+      text(title, margin, y, 15, pdfColors.accent, true);
+      line(margin, y - 8, margin + 105, y - 8, pdfColors.gold, 1.5);
+      y -= 24;
     }
 
     function paragraph(value, maxChars, size, gap){
@@ -481,11 +509,11 @@
       });
 
       y = 610;
-      card(margin, y, contentWidth, 70);
-      text(data.firstName + ' ' + data.lastName, margin + 18, y - 25, 17, pdfColors.accent, true);
-      text('Title: ' + data.title, margin + 18, y - 45, 10.5, pdfColors.text, false);
-      text('Report Date: ' + data.date, pageWidth - margin - 170, y - 45, 10.5, pdfColors.muted, false);
-      y -= 100;
+      card(margin, y, contentWidth, 58);
+      text(data.firstName + ' ' + data.lastName, margin + 16, y - 22, 16, pdfColors.accent, true);
+      text('Title: ' + data.title, margin + 16, y - 39, 10, pdfColors.text, false);
+      text('Report Date: ' + data.date, pageWidth - margin - 160, y - 39, 10, pdfColors.muted, false);
+      y -= 78;
     }
 
     function paragraphHeader(value, x, textY, size, color){
@@ -503,11 +531,11 @@
         if(col === 0) ensure(46);
         const x = margin + col * (itemW + 12);
         const topY = y;
-        card(x, topY, itemW, 34);
-        rect(x + 12, topY - 21, 8, 8, pdfColors.gold);
-        text(highlight, x + 26, topY - 23, 9.5, pdfColors.accent, true);
+        card(x, topY, itemW, 28);
+        rect(x + 10, topY - 18, 7, 7, pdfColors.gold);
+        text(highlight, x + 23, topY - 20, 9, pdfColors.accent, true);
         if(col === 1 || index === data.highlights.length - 1){
-          y -= 46;
+          y -= 36;
         }
       });
       y -= 4;
@@ -516,16 +544,16 @@
     function drawScores(){
       sectionTitle('RIASEC Profile Scores');
       data.scores.forEach(function(score){
-        ensure(52);
-        card(margin, y, contentWidth, 42);
-        rect(margin + 14, y - 24, 8, 8, score.color);
-        text(score.label, margin + 28, y - 25, 10.5, pdfColors.text, true);
-        rect(margin + 150, y - 25, 260, 7, pdfColors.border);
-        rect(margin + 150, y - 25, Math.max(5, 260 * score.pct / 100), 7, score.color);
-        text(score.pctText, margin + 425, y - 26, 10.5, pdfColors.accent, true);
-        const strength = wrapText(score.strength, 66)[0] || '';
-        text(strength, margin + 28, y - 39, 8.5, pdfColors.muted, false);
-        y -= 52;
+        ensure(44);
+        card(margin, y, contentWidth, 34);
+        rect(margin + 12, y - 20, 7, 7, score.color);
+        text(score.label, margin + 25, y - 22, 10, pdfColors.text, true);
+        rect(margin + 140, y - 22, 245, 6, pdfColors.border);
+        rect(margin + 140, y - 22, Math.max(5, 245 * score.pct / 100), 6, score.color);
+        text(score.pctText, margin + 400, y - 23, 10, pdfColors.accent, true);
+        const strength = wrapText(score.strength, 72)[0] || '';
+        text(strength, margin + 25, y - 33, 8.2, pdfColors.muted, false);
+        y -= 42;
       });
       y -= 8;
     }
@@ -555,17 +583,17 @@
     function drawDrivers(){
       sectionTitle('Strongest Work Drivers');
       data.drivers.forEach(function(driver){
-        ensure(76);
-        card(margin, y, contentWidth, 64);
-        rect(margin, y - 64, 6, 64, driver.color);
-        text(driver.name, margin + 18, y - 24, 12, pdfColors.text, true);
-        rect(pageWidth - margin - 105, y - 30, 82, 18, driver.color);
-        text(driver.type, pageWidth - margin - 94, y - 24, 8.5, pdfColors.card, true);
-        const descLines = wrapText(driver.desc, 86).slice(0, 2);
+        ensure(62);
+        card(margin, y, contentWidth, 52);
+        rect(margin, y - 46, 5, 46, driver.color);
+        text(driver.name, margin + 16, y - 20, 11, pdfColors.text, true);
+        rect(pageWidth - margin - 96, y - 25, 74, 15, driver.color);
+        text(driver.type, pageWidth - margin - 88, y - 20, 8, pdfColors.card, true);
+        const descLines = wrapText(driver.desc, 92).slice(0, 2);
         descLines.forEach(function(lineText, index){
-          text(lineText, margin + 18, y - 45 - index * 12, 9, pdfColors.muted, false);
+          text(lineText, margin + 16, y - 38 - index * 10, 8.7, pdfColors.muted, false);
         });
-        y -= 76;
+        y -= 60;
       });
     }
 
