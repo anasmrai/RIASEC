@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>RIASEC-Based Situational Development Assessment</title>
 
   <link rel="stylesheet" href="assets/css/styles.css" />
@@ -10,8 +11,8 @@
 
 <body>
 
-  <!-- WELCOME -->
-  <div id="welcome" class="screen active">
+  <!-- WELCOME PAGE -->
+  <section id="welcome" class="screen active">
     <div class="welcome-inner">
       <div class="w-badge">RIASEC · Situational Development Assessment</div>
 
@@ -20,11 +21,11 @@
       </h1>
 
       <p class="w-sub">
-        A 60-question assessment built on Holland's RIASEC model. It combines activity preferences,
-        workplace scenarios, and forced-choice decisions to map interests into practical development recommendations.
+        A 60-question assessment built on Holland's RIASEC model.
+        It combines activity preferences, workplace scenarios, and forced-choice decisions.
       </p>
 
-      <button class="start-btn" id="beginAssessmentBtn" type="button">
+      <button id="beginAssessmentBtn" class="start-btn" type="button">
         Begin Assessment →
       </button>
 
@@ -34,146 +35,145 @@
         <span>Development report</span>
       </div>
     </div>
-  </div>
+  </section>
 
 
-  <!-- INTAKE -->
-  <div id="intake" class="screen">
+  <!-- CAREER LEVEL PAGE -->
+  <section id="intake" class="screen">
     <div class="intake-inner">
       <div class="intake-header">
         <h2>Before You Begin</h2>
-        <p>Select the closest career level. This helps lightly frame the final development language.</p>
+        <p>Select the closest career level.</p>
       </div>
 
       <div class="field-group">
         <label>Career level</label>
 
-        <div class="chip-group" id="level-chips">
-          <div class="chip" data-val="early career">Early career</div>
-          <div class="chip" data-val="mid-level">Mid-level</div>
-          <div class="chip" data-val="senior">Senior</div>
-          <div class="chip" data-val="executive">Executive</div>
-          <div class="chip" data-val="student">Student</div>
+        <div id="level-chips" class="chip-group">
+          <button class="chip" type="button" data-val="early career">Early career</button>
+          <button class="chip" type="button" data-val="mid-level">Mid-level</button>
+          <button class="chip" type="button" data-val="senior">Senior</button>
+          <button class="chip" type="button" data-val="executive">Executive</button>
+          <button class="chip" type="button" data-val="student">Student</button>
         </div>
       </div>
 
-      <button class="next-btn" id="start-assess" type="button">
+      <button id="start-assess" class="next-btn" type="button">
         Start Assessment →
       </button>
     </div>
-  </div>
+  </section>
 
 
-  <!-- ASSESSMENT -->
-  <div id="assessment" class="screen">
+  <!-- ASSESSMENT PAGE -->
+  <section id="assessment" class="screen">
     <div class="assess-top">
       <div class="assess-nav">
         <span id="q-type-badge" class="type-badge">Q</span>
 
         <div class="prog-bar">
-          <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+          <div id="prog-fill" class="prog-fill"></div>
         </div>
 
-        <span class="prog-label" id="prog-label">1 / 60</span>
+        <span id="prog-label" class="prog-label">1 / 60</span>
       </div>
     </div>
 
     <div class="assess-body">
-      <div class="q-context" id="q-context">Question Style</div>
-      <div class="q-text" id="q-text">Question loads here</div>
-      <div class="q-instruction" id="q-instruction"></div>
-      <div class="options-grid" id="options-grid"></div>
+      <div id="q-context" class="q-context">Question Style</div>
+      <div id="q-text" class="q-text">Question loads here</div>
+      <div id="q-instruction" class="q-instruction"></div>
+      <div id="options-grid" class="options-grid"></div>
     </div>
 
     <div class="assess-footer">
-      <button class="prev-btn" id="prev-btn" type="button">← Back</button>
+      <button id="prev-btn" class="prev-btn" type="button">← Back</button>
       <div id="q-style-label"></div>
     </div>
-  </div>
+  </section>
 
 
-  <!-- LOADING -->
-  <div id="loading" class="screen">
+  <!-- LOADING PAGE -->
+  <section id="loading" class="screen">
     <div class="loader-inner">
       <div class="loader-ring"></div>
 
       <div class="loader-title">Analyzing your profile</div>
 
       <div class="loader-steps">
-        <div class="loader-step" id="ls1">Scoring 6 RIASEC dimensions…</div>
-        <div class="loader-step" id="ls2">Mapping practical sub-drivers…</div>
-        <div class="loader-step" id="ls3">Checking profile clarity and reliability signals…</div>
-        <div class="loader-step" id="ls4">Building your development path map…</div>
+        <div id="ls1" class="loader-step">Scoring 6 RIASEC dimensions…</div>
+        <div id="ls2" class="loader-step">Mapping practical sub-drivers…</div>
+        <div id="ls3" class="loader-step">Checking profile clarity…</div>
+        <div id="ls4" class="loader-step">Building your development report…</div>
       </div>
     </div>
-  </div>
+  </section>
 
 
-  <!-- RESULTS -->
-  <div id="results" class="screen">
+  <!-- RESULTS PAGE -->
+  <section id="results" class="screen">
     <div class="res-header">
       <p id="res-name-label" class="res-label">Your Profile</p>
       <h1 id="res-title">Interest Profile</h1>
       <p id="res-subtitle">Primary type · Holland Code</p>
-      <div class="code-display" id="code-display"></div>
+
+      <div id="code-display" class="code-display"></div>
     </div>
 
     <div class="res-body">
       <p class="section-title">RIASEC Profile Scores</p>
-      <div class="profile-grid" id="profile-grid"></div>
+      <div id="profile-grid" class="profile-grid"></div>
 
       <p class="section-title">RIASEC Profile Report</p>
-      <div class="report" id="report-content"></div>
+      <div id="report-content" class="report"></div>
 
       <p class="section-title">Strongest Work Drivers</p>
-      <div class="subdriver-grid" id="subdriver-grid"></div>
+      <div id="subdriver-grid" class="subdriver-grid"></div>
 
       <div class="action-row">
-        <button class="pdf-btn" id="openPdfModalBtn" type="button">
+        <button id="openPdfModalBtn" class="pdf-btn" type="button">
           Generate this report in PDF
         </button>
 
-        <button class="restart-btn" id="restartBtn" type="button">
+        <button id="restartBtn" class="restart-btn" type="button">
           Start New Assessment
         </button>
       </div>
-
-      <div style="height:2rem"></div>
     </div>
-  </div>
+  </section>
 
 
   <!-- PDF POPUP -->
-  <div class="modal-backdrop" id="pdfModal" aria-hidden="true">
-    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="pdfModalTitle">
+  <div id="pdfModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-box">
       <div class="modal-header">
-        <h2 id="pdfModalTitle">Generate PDF Report</h2>
-        <button class="modal-close-btn" id="closePdfModalBtn" type="button" aria-label="Close">×</button>
+        <h2>Generate PDF Report</h2>
+        <button id="closePdfModalBtn" class="modal-close-btn" type="button">×</button>
       </div>
 
-      <p>Add the employee details below. They will appear at the top of the downloaded report.</p>
+      <p>Add the employee details below.</p>
 
       <div class="modal-field">
         <label for="pdfFirstName">First Name</label>
-        <input id="pdfFirstName" type="text" autocomplete="given-name" placeholder="First name" required />
+        <input id="pdfFirstName" type="text" placeholder="First name" />
       </div>
 
       <div class="modal-field">
         <label for="pdfLastName">Last Name</label>
-        <input id="pdfLastName" type="text" autocomplete="family-name" placeholder="Last name" required />
+        <input id="pdfLastName" type="text" placeholder="Last name" />
       </div>
 
       <div class="modal-field">
         <label for="pdfTitle">Title</label>
-        <input id="pdfTitle" type="text" autocomplete="organization-title" placeholder="Job title" required />
+        <input id="pdfTitle" type="text" placeholder="Job title" />
       </div>
 
       <div class="modal-actions">
-        <button class="cancel-btn" id="cancelPdfBtn" type="button">Exit</button>
-        <button class="generate-btn" id="generatePdfBtn" type="button">Generate PDF</button>
+        <button id="cancelPdfBtn" class="cancel-btn" type="button">Exit</button>
+        <button id="generatePdfBtn" class="generate-btn" type="button">Generate PDF</button>
       </div>
 
-      <div class="download-status" id="downloadStatus"></div>
+      <div id="downloadStatus" class="download-status"></div>
     </div>
   </div>
 
