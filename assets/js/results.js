@@ -1,6 +1,6 @@
 function resultSafeText(value) {
   if (typeof escapeHtml === "function") {
-    return escapeHtml(value);
+    return escapeHtml(value || "");
   }
 
   return String(value || "")
@@ -11,17 +11,53 @@ function resultSafeText(value) {
     .replace(/'/g, "&#039;");
 }
 
+function ensureLatestResultLayout() {
+  var resultsScreen = document.getElementById("results");
+
+  resultsScreen.innerHTML = `
+    <div class="res-header">
+      <p id="res-name-label" class="res-label">Your Profile</p>
+      <h1 id="res-title">Interest Profile</h1>
+      <p id="res-subtitle">Primary type · Holland Code</p>
+      <div id="code-display" class="code-display"></div>
+    </div>
+
+    <div class="res-body">
+      <p class="section-title">RIASEC Profile Scores</p>
+      <div id="profile-grid" class="profile-grid"></div>
+
+      <p class="section-title">RIASEC Profile Report</p>
+      <div id="report-content" class="report"></div>
+
+      <p class="section-title">Strongest Work Drivers</p>
+      <div id="subdriver-grid" class="subdriver-grid"></div>
+
+      <div class="action-row">
+        <button id="openPdfModalBtn" class="pdf-btn" type="button" onclick="openPdfModal()">
+          Generate this report in PDF
+        </button>
+
+        <button id="restartBtn" class="restart-btn" type="button" onclick="restartAssessment()">
+          Start New Assessment
+        </button>
+      </div>
+
+      <div style="height:2rem"></div>
+    </div>
+  `;
+}
+
 function renderResults(results) {
   if (!results || !results.primary) {
     console.error("No results found.");
     return;
   }
 
+  ensureLatestResultLayout();
+
   var primary = results.primary;
   var secondary = results.secondary;
   var hollandCode = results.hollandCode;
-
-  document.getElementById("res-name-label").textContent = "Your Profile";
 
   document.getElementById("res-title").textContent =
     primary.name + "–" + secondary.name + " Interest Profile";
@@ -104,55 +140,15 @@ function renderProfileReport(results) {
 
   var primary = results.primary;
   var secondary = results.secondary;
-  var tertiary = results.tertiary;
-
-  var primaryTips = TYPE_SUGGESTIONS[primary.key];
-  var secondaryTips = TYPE_SUGGESTIONS[secondary.key];
 
   report.innerHTML =
     '<h3>Your Core Pattern</h3>' +
-
-    '<p>Your strongest pattern points toward work that combines <strong>' +
-    resultSafeText(primary.name) +
-    '</strong> interests with <strong>' +
-    resultSafeText(secondary.name) +
-    '</strong> support. This means you are most likely energized by work involving ' +
-    resultSafeText(primary.definition) +
-    '.</p>' +
-
-    '<p>Your secondary pattern adds a strong support style connected to ' +
-    resultSafeText(secondary.definition) +
-    '. Your third pattern, <strong>' +
-    resultSafeText(tertiary.name) +
-    '</strong>, adds another layer connected to ' +
-    resultSafeText(tertiary.definition) +
-    '.</p>' +
-
-    '<p>Together, your Holland Code is <strong>' +
-    resultSafeText(results.hollandCode) +
-    '</strong>. This code should be used as a development guide, not as a fixed label. It shows what type of work may feel more natural, motivating, and sustainable.</p>' +
-
-    '<h3>How This May Show Up at Work</h3>' +
-
-    '<p>You may perform best when your role gives you room to use your primary interest while also using your secondary style. This combination can help explain what tasks feel natural, what responsibilities feel draining, and what type of development may fit you best.</p>' +
-
-    '<h3>Suggested Training</h3>' +
-    '<p>' + resultSafeText(primaryTips.training) + '</p>' +
-
-    '<h3>Suggested Projects</h3>' +
-    '<p>' + resultSafeText(primaryTips.projects) + '</p>' +
-
-    '<h3>Coaching Focus</h3>' +
-    '<p>' + resultSafeText(primaryTips.coaching) + '</p>' +
-
-    '<h3>Possible Career Direction</h3>' +
-    '<p>' + resultSafeText(primaryTips.career) + '</p>' +
-
-    '<h3>Secondary Development Support</h3>' +
-    '<p>Because your secondary type is <strong>' +
-    resultSafeText(secondary.name) +
-    '</strong>, you may also benefit from development connected to: ' +
-    resultSafeText(secondaryTips.training) +
+    '<p>' +
+      'Your strongest pattern points toward work that combines ' +
+      resultSafeText(primary.definition) +
+      ' with ' +
+      resultSafeText(secondary.definition) +
+      '. You are likely energized by roles where your main interest area is supported by your secondary style. This profile should be used as a development guide, not as a fixed label.' +
     '</p>';
 }
 
@@ -160,7 +156,9 @@ function renderStrongestWorkDrivers(results) {
   var grid = document.getElementById("subdriver-grid");
   grid.innerHTML = "";
 
-  results.topDrivers.forEach(function (driver) {
+  var drivers = results.topDrivers || [];
+
+  drivers.forEach(function (driver) {
     var card = document.createElement("div");
     card.className = "sd-card";
 
