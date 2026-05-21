@@ -11,22 +11,34 @@ function resultSafeText(value) {
     .replace(/'/g, "&#039;");
 }
 
-function ensureLatestResultLayout() {
-  var resultsScreen = document.getElementById("results");
-
-  if (!resultsScreen) {
-    console.error("Results screen was not found.");
+function renderResults(results) {
+  if (!results || !results.primary) {
+    console.error("No results found.");
     return;
   }
+
+  buildLatestResultLayout();
+
+  document.getElementById("res-name-label").textContent = "Your Profile";
+  document.getElementById("res-title").textContent =
+    results.primary.name + "–" + results.secondary.name + " Interest Profile";
+  document.getElementById("res-subtitle").textContent =
+    "Primary type: " + results.primary.name + " · Holland Code: " + results.hollandCode;
+
+  renderHollandCode(results);
+  renderProfileScores(results);
+  renderProfileReport(results);
+  renderStrongestWorkDrivers(results);
+}
+
+function buildLatestResultLayout() {
+  var resultsScreen = document.getElementById("results");
 
   resultsScreen.innerHTML = `
     <div class="res-header">
       <p id="res-name-label" class="res-label">Your Profile</p>
-
       <h1 id="res-title">Interest Profile</h1>
-
       <p id="res-subtitle">Primary type · Holland Code</p>
-
       <div id="code-display" class="code-display"></div>
     </div>
 
@@ -41,21 +53,11 @@ function ensureLatestResultLayout() {
       <div id="subdriver-grid" class="subdriver-grid"></div>
 
       <div class="action-row">
-        <button
-          id="openPdfModalBtn"
-          class="pdf-btn"
-          type="button"
-          onclick="openPdfModal()"
-        >
+        <button class="pdf-btn" id="openPdfModalBtn" type="button" onclick="openPdfModal()">
           Generate this report in PDF
         </button>
 
-        <button
-          id="restartBtn"
-          class="restart-btn"
-          type="button"
-          onclick="restartAssessment()"
-        >
+        <button class="restart-btn" id="restartBtn" type="button" onclick="restartAssessment()">
           Start New Assessment
         </button>
       </div>
@@ -65,41 +67,12 @@ function ensureLatestResultLayout() {
   `;
 }
 
-function renderResults(results) {
-  if (!results || !results.primary) {
-    console.error("No results found.");
-    return;
-  }
-
-  ensureLatestResultLayout();
-
-  var primary = results.primary;
-  var secondary = results.secondary;
-  var hollandCode = results.hollandCode || "";
-
-  document.getElementById("res-name-label").textContent = "Your Profile";
-
-  document.getElementById("res-title").textContent =
-    primary.name + "–" + secondary.name + " Interest Profile";
-
-  document.getElementById("res-subtitle").textContent =
-    "Primary type: " + primary.name + " · Holland Code: " + hollandCode;
-
-  renderHollandCode(results);
-  renderProfileScores(results);
-  renderProfileReport(results);
-  renderStrongestWorkDrivers(results);
-}
-
 function renderHollandCode(results) {
   var codeDisplay = document.getElementById("code-display");
   codeDisplay.innerHTML = "";
 
-  var code = results.hollandCode || "";
-
-  code.split("").forEach(function (letter) {
+  String(results.hollandCode || "").split("").forEach(function (letter) {
     var type = TYPES[letter];
-
     if (!type) return;
 
     var box = document.createElement("div");
@@ -126,7 +99,7 @@ function renderProfileScores(results) {
       '</div>' +
 
       '<div class="pr-bar-wrap">' +
-        '<div class="pr-bar" style="width:' + item.percent + '%; background:' + item.color + '"></div>' +
+        '<div class="pr-bar" style="width:' + item.percent + '%;background:' + item.color + '"></div>' +
       '</div>' +
 
       '<div class="pr-pct">' + item.percent + '%</div>' +
@@ -161,13 +134,11 @@ function getScoreDescription(item) {
 
 function renderProfileReport(results) {
   var report = document.getElementById("report-content");
-
   var primary = results.primary;
   var secondary = results.secondary;
 
   report.innerHTML =
     '<h3>Your Core Pattern</h3>' +
-
     '<p>' +
       'Your strongest pattern points toward work that combines ' +
       resultSafeText(primary.definition) +
@@ -195,17 +166,14 @@ function renderStrongestWorkDrivers(results) {
 
     card.innerHTML =
       '<div class="sd-head">' +
-        '<div class="sd-name">' +
-          resultSafeText(driver.name) +
-        '</div>' +
-
+        '<div class="sd-name">' + resultSafeText(driver.name) + '</div>' +
         '<div class="sd-type" style="background:' + driver.color + '">' +
           resultSafeText(driver.typeName) +
         '</div>' +
       '</div>' +
 
       '<div class="sd-bar-wrap">' +
-        '<div class="sd-bar" style="width:' + driver.percent + '%; background:' + driver.color + '"></div>' +
+        '<div class="sd-bar" style="width:' + driver.percent + '%;background:' + driver.color + '"></div>' +
       '</div>' +
 
       '<div class="sd-desc">' +
